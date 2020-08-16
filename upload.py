@@ -10,6 +10,7 @@ hostip = input("input hostip>>>")
 port = int(input("input port>>>"))
 
 all_len = len(ans)
+print("[send-file] all_len = " + str(all_len))
 
 while len(ans) > 1000:
     msg = ggntalk.csnd(b"append|" + fname.encode("utf-8") + b"|" + ans[:1000], hostip, port,1024)
