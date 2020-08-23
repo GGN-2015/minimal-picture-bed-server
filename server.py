@@ -35,7 +35,7 @@ def matchpre(s, p): # 匹配字符串前缀
 
     return True
 
-def worker(inp): # 操作员函数，将HTML代码作为返回值
+def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
 
     if matchpre(inp, "append|"): # 无法用浏览器访问此功能
         inp = inp[len("append|"):]
@@ -129,7 +129,9 @@ def worker(inp): # 操作员函数，将HTML代码作为返回值
     if matchpre(inp, "code/"): # 显示程序代码
         inp = inp[len("code/"):]
         outp += "<h2>"+inp+"</h2><hr>\n"
-        outp += "<pre>"+getf(ip).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")+"</pre>"
+        outp += "<pre>"+getf(inp).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")+"</pre>"
+        outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) +"/image/look.png\"></img>"
+        return outp
 
     if matchpre(inp, "show/"): # 直接显示 HTML 文件
         inp = inp[len("show/"):]
@@ -139,6 +141,12 @@ def worker(inp): # 操作员函数，将HTML代码作为返回值
     elif matchpre(inp, "run/"): # 执行一个 python 程序，将输出作为 HTML 返回
         print("[服务器 工人] 执行一个 python 程序")
         inp = inp[len("run/"):]
+        
+        res = ""
+        if inp.find("/") != -1:
+            fname, res = inp.split("/", 1)
+            inp = fname
+            print("fname = " + fname + " res = " + res)
 
         inp += ".py"
 
@@ -149,13 +157,20 @@ def worker(inp): # 操作员函数，将HTML代码作为返回值
             outp += "<body style='max-width: 500px; margin: 0 auto'><h4>喵呜~ 您的程序丢了!</h4>"
             outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\"></img></body>"
             return outp
-            
+        
+        fi = open("tmp-in" + str(cid), "w")
+        fi.write(res)
+        fi.close()
 
         print(" 执行 python 程序 inp = " + inp + " ...")
-        os.system("python3 " + inp + " > tmp.out")
+        os.system("python3 " + inp + " < tmp-in" + str(cid) + " > tmp-out" + str(cid))
         
         print(" 生成返回结果 ...")
-        outp += getf("tmp.out")
+        outp += getf("tmp-out" + str(cid))
+
+        os.system("rm tmp-in" + str(cid))
+        os.system("rm tmp-out" + str(cid))
+
         return outp
 
     else:
@@ -197,7 +212,7 @@ def consultant(cli): # use this in threads to answer for clients
         print(traceback.format_exc())
 
     print("[服务器 顾问] 向客户端反馈信息 cid = " + str(cid))
-    csend(cli, enco(worker(msg)))
+    csend(cli, enco(worker(msg, cid)))
     cli.close()
 
 
