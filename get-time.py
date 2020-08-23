@@ -1,6 +1,11 @@
 import time
+import traceback
 
-inp = input() # 获取输入信息
+inp = ""
+try:
+    inp = input() # 获取输入信息
+except:
+    pass # 不能获取说明没有输入信息
 
 print("<head>")
 print("<title>获取系统时间</title>")
