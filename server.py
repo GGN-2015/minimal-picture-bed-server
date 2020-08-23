@@ -1,13 +1,14 @@
+# -*- encoding: utf-8 -*-
+
 # i swear to use a single file to contain the whole server! -- GGN_2015
 # GGN_2015 is a true programmer
 
-version = "2020-08-16"
-author  = "GGN_2015"
+# 我是中国人，只说中国话，凭什么在注释里面写英文。
+# 小声说：英语不好，怕被喷
+# 请用 utf-8 解析此文件
 
-""" functions are listed as follows.
-sloop(host, port) # open a server
-getf(filename)    # read in all context in a file
-"""
+version = "2020-08-23"
+author  = "GGN_2015"
 
 import socket
 import os
@@ -15,12 +16,13 @@ import time
 import traceback
 import threading
 
-cflag = True # important var to stop the server normally
+cflag = True # 先前用这个变量控制循环是否终止
 
-from config import PORT    # read in config.py
+from config import PORT    # 从 config.py 中读取变量
 from config import HOST_IP 
+from config import WAN_IP
 
-def matchpre(s, p):
+def matchpre(s, p): # 匹配字符串前缀
     if type(s) == str:
         s += "#"
     else:
@@ -33,75 +35,134 @@ def matchpre(s, p):
 
     return True
 
-def worker(inp):
+def worker(inp): # 操作员函数，将HTML代码作为返回值
 
-    if matchpre(inp, "append|"): # get the message from console not explorer
+    if matchpre(inp, "append|"): # 无法用浏览器访问此功能
         inp = inp[len("append|"):]
         lis = inp.split(b"|", 1)
-        fname = lis[0] # filename
-        res = lis[1]   # content of the file
+        fname = lis[0] # 文件名
+        res = lis[1]   # 文件内容
+        
+        parts = fname.split(b".")
+        if parts[-1] == b"py": # 我不可能让你上传一个程序
+            return "[服务器] 上传文件后缀不合法。"
 
-        fi = open(fname, "ab") # write binary file
+        fi = open(fname, "ab") # 写二进制文件
         fi.write(res)
         fi.close()
 
-        return "[file-receiver] append file successfully. len = " + str(len(res))
+        return "[服务器] 追加成功 " + str(len(res)) + " 字节。"
 
     inp = inp.decode("utf-8")
     inp = inp.split("\n", 1)[0].replace("GET /", "").split(" HTTP")[0]
-    #inp.replace("--", "..")  # if you want to show all the image/code in your server, uncomment this.
+    #inp.replace("--", "..")  # 如果您希望客户从浏览器访问到服务器上的全部文件，请取消这行的注释。
 
-    if matchpre(inp, "image/"):
-        print("[file-receiver] image instruction found.")
+    print("[服务器 工人] inp = " + inp)
 
-        inp = inp[len("image/"):]
-        print("inp = " + inp)
+    if matchpre(inp, "image/") or inp == "favicon.ico":
+        print("[服务器 工人] 正在生成图片返回信息.")
+
+        if inp != "favicon.ico":
+            inp = inp[len("image/"):]
+        
+        # print("inp = " + inp)
 
         outp = "HTTP/1.1 200 OK\n"
         outp += "Accept-Ranges: bytes\n"
         outp += "Content-Type: image/png\n"
         outp += "Server: Apache-Coyote/1.1\n"
-        outp += "Date: Fri, 21 Jul 2017 07:45:45 GMT\n"
-        outp += "Content-Length: $SIZE$\n"
-        outp += "Date: Fri, 21 Jul 2017 07:45:45 GMT\n\n"
+        outp += "Date: " + time.ctime() + " GMT\n"
+        outp += "Content-Length: $SIZE$\n\n"
 
         ans = b""
+        if inp == "favicon.ico":
+            print("[服务器 工人] 正在绘制图标文件 ...")
+            fi = open("qwq.png", "rb")
+            outp.replace("png", "jpeg")
+            ans = fi.read()
+            outp.replace("$SIZE$", str(len(ans))) # 填写文件大小
+            fi.close()
+
+            outp = outp.encode("utf-8") + ans
+            print("[服务器 工人] 图标文件绘制成功 ...")
+            return outp
+
         try:
-            print("[file-receiver] reading file...")
+            print("[服务器 工人] 正在读取图片文件 ...")
+
+            if not os.path.isfile(inp):
+                # 文件不存在
+                print("[服务器 工人] 图片不存在.")
+                outp = "HTTP/1.1 200 OK\nContent-Type: text\n\n"
+                outp += "<head><meta charset=\"utf-8\"><title>404 Not Found</title></head>"
+                outp += "<body style='max-width: 500px; margin: 0 auto'><h4>喵呜~ 您的图丢了!</h4>"
+                outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\"></img></body>"
+                return outp
+
             fi = open(inp, "rb")
             ans = fi.read()
             fi.close()
-            print("[file-receiver] reading file end...")
+            print("[服务器 工人] 文件读取完成...")
             outp.replace("$SIZE$", str(len(ans)))
         except:
-            print("[file-receiver] error found...")
-            outp = "HTTP/1.1 200 OK\nContent-Type: text"
+            print("[服务器 工人] 图片文件读取出错 ...")
+            outp = "HTTP/1.1 200 OK\nContent-Type: text\n\n"
             ans = traceback.format_exc().encode("utf-8")
             print(traceback.format_exc())
         outp = outp.encode("utf-8") + ans
-        return outp # return bytes
+        return outp
+
         
 
     outp = """HTTP/1.1 200 OK\nContent-Type: html\nCharset: UTF-8\n\n"""
-    outp += "<head><title>code</title><meta charset=\"utf-8\"></head>"
+    outp += "<head><title>显示代码</title><meta charset=\"utf-8\"></head>"
     outp += "<body>\n"
 
-    # ----- add your code under this line -----
+    # ----- 在线下填写你的代码 -----
 
 
-    if inp == "stop/" or inp == "stop":
-        outp += "<h2>[file-receiver] server stop successfully</h2>"
-        global cflag
-        cflag = False
+    #if inp == "stop/" or inp == "stop":
+    #    outp += "<h3>[server] server stop successfully</h3>"
+    #    global cflag
+    #    cflag = False
 
-    elif matchpre(inp, "code/"):
+    if matchpre(inp, "code/"): # 显示程序代码
         inp = inp[len("code/"):]
         outp += "<h2>"+inp+"</h2><hr>\n"
-        outp += "<pre>"+getf(inp).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")+"</pre>"
+        outp += "<pre>"+getf(ip).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")+"</pre>"
+
+    if matchpre(inp, "show/"): # 直接显示 HTML 文件
+        inp = inp[len("show/"):]
+        outp = getf(inp)
+        return outp
+
+    elif matchpre(inp, "run/"): # 执行一个 python 程序，将输出作为 HTML 返回
+        print("[服务器 工人] 执行一个 python 程序")
+        inp = inp[len("run/"):]
+
+        inp += ".py"
+
+        if not os.path.isfile(inp): # 文件不存在
+            print("[服务器 工人] python 程序不存在!")
+            outp = "HTTP/1.1 200 OK\nContent-Type: text\n\n"
+            outp += "<head><meta charset=\"utf-8\"><title>404 Not Found</title></head>"
+            outp += "<body style='max-width: 500px; margin: 0 auto'><h4>喵呜~ 您的程序丢了!</h4>"
+            outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\"></img></body>"
+            return outp
+            
+
+        print(" 执行 python 程序 inp = " + inp + " ...")
+        os.system("python3 " + inp + " > tmp.out")
+        
+        print(" 生成返回结果 ...")
+        outp += getf("tmp.out")
+        return outp
 
     else:
         #outp += "[ggnserver] instruction not found."
-        outp += "<h2>[file-receiver] you input:" + inp + "</h2>"
+        print("[服务器] 客户端输入的指令不是指令。")
+        outp += "<h2>[服务器] 你输入了:{" + inp + "} \n但是这并不是一个指令</h2>"
+        outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\"></img>"
 
     outp += "</body>"
 
@@ -120,7 +181,7 @@ def csend(cli, msg):
     while len(msg) > 500:
         cli.send(msg[:500])
         msg = msg[500:]
-    cli.send(msg) # send a message divided
+    cli.send(msg) # 分条发送消息
 
 def consultant(cli): # use this in threads to answer for clients
     global conid
@@ -128,49 +189,52 @@ def consultant(cli): # use this in threads to answer for clients
     cid = conid # get an id by count
 
     try:
-        print("[consultant] wait cli msg, cid = " + str(cid))
+        print("[服务器 顾问] 等待客户端反馈信息, cid = " + str(cid))
         msg = cli.recv(1024 * 1024 * 33)
 
     except:
-        print("[consultant] error when wait cli msg. cid = " + str(cid))
+        print("[服务器 顾问] 等待客户端反馈信息时出错. cid = " + str(cid))
         print(traceback.format_exc())
 
-    print("[consultant] sending msg back cid = " + str(cid))
+    print("[服务器 顾问] 向客户端反馈信息 cid = " + str(cid))
     csend(cli, enco(worker(msg)))
     cli.close()
 
 
-def getf(filename): # read in all context in a file
+def getf(filename): # 读入文件中的所有内容
     fi = open(filename, "r")
-    ans = fi.read() # read all text in the file
+    ans = fi.read()
     fi.close()
-    return ans # return all the text in the file
+    return ans
 
-def getip(): # get ip of the computer
+def getip(): # 得到本机在局域网中的 IP
     tcp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     tcp.connect(("8.8.8.8", 80))
     ip = tcp.getsockname()[0]
     tcp.close()
     return ip
 
-def sloop(): # server loop
+def sloop(): # 服务器的主循环
     global PORT
     global HOST_IP
-    print("[file-reveiver] start.")
-    print(" version : " + version + " author : " + author)
-    print(" port: " + str(PORT))
+    global WAN_IP
+    print("[服务器] 启动.")
+    print(" 版本 : " + version + " 作者 : " + author)
+    print(" 端口: " + str(PORT))
+    print(" 广域网 IP：" + str(WAN_IP))
 
     try:
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         if HOST_IP == "auto":
             HOST_IP = getip()
+            print(" 局域网 IP：" + HOST_IP)
 
         tcp.bind((HOST_IP, PORT))
         tcp.listen(5)
 
     except:
-        print("[file-receiver] can not create a server.")
+        print("[服务器] 无法启动服务器，原因可能是端口已经被占用。")
         print(traceback.format_exc())
         tcp.close()
         return
@@ -181,7 +245,7 @@ def sloop(): # server loop
 
         while cflag: # cflag can be set by worker
             try:
-                print("[file-receiver] waitting for connection ...")
+                print("[服务器] 等待客户端连接 ...")
                 cli, addr = tcp.accept()
 
                 th = threading.Thread(target = consultant, args = (cli, ))
@@ -189,12 +253,12 @@ def sloop(): # server loop
                 th.start()
 
             except:
-                print("[file-receiver] error when solve consalt ...")
+                print("[服务器] 在访问服务器顾问时出错，错误信息如下：")
                 print(traceback.format_exc())
 
-        print("[file-receiver] tcp server end...")
+        print("[服务器] 服务器成功终止。")
         tcp.close()
 
 if __name__ == "__main__":
-    print("[file-receiver] it is going to start ...")
+    print("[服务器] 正在准备启动 ...")
     sloop()
