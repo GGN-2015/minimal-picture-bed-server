@@ -57,10 +57,10 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
     inp = inp.split("\n", 1)[0].replace("GET /", "").split(" HTTP")[0]
     #inp.replace("--", "..")  # 如果您希望客户从浏览器访问到服务器上的全部文件，请取消这行的注释。
 
-    print("[服务器 工人] inp = " + inp)
+    print("    [服务器 工人] inp = " + inp)
 
     if matchpre(inp, "image/") or inp == "favicon.ico":
-        print("[服务器 工人] 正在生成图片返回信息.")
+        print("    [服务器 工人] 正在生成图片返回信息.")
 
         if inp != "favicon.ico":
             inp = inp[len("image/"):]
@@ -76,19 +76,19 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
 
         ans = b""
         if inp == "favicon.ico":
-            print("[服务器 工人] 正在绘制图标文件 ...")
-            fi = open("qwq.png", "rb")
-            outp.replace("png", "jpeg")
+            print("    [服务器 工人] 正在绘制图标文件 ...")
+            fi = open("favicon.png", "rb")
+            #outp.replace("png", "jpeg")
             ans = fi.read()
             outp.replace("$SIZE$", str(len(ans))) # 填写文件大小
             fi.close()
 
             outp = outp.encode("utf-8") + ans
-            print("[服务器 工人] 图标文件绘制成功 ...")
+            print("    [服务器 工人] 图标文件绘制成功 ...")
             return outp
 
         try:
-            print("[服务器 工人] 正在读取图片文件 ...")
+            print("    [服务器 工人] 正在读取图片文件 ...")
 
             if not os.path.isfile(inp):
                 # 文件不存在
@@ -102,10 +102,10 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
             fi = open(inp, "rb")
             ans = fi.read()
             fi.close()
-            print("[服务器 工人] 文件读取完成...")
+            print("    [服务器 工人] 文件读取完成...")
             outp.replace("$SIZE$", str(len(ans)))
         except:
-            print("[服务器 工人] 图片文件读取出错 ...")
+            print("    [服务器 工人] 图片文件读取出错 ...")
             outp = "HTTP/1.1 200 OK\nContent-Type: text\n\n"
             ans = traceback.format_exc().encode("utf-8")
             print(traceback.format_exc())
@@ -139,7 +139,7 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         return outp
 
     elif matchpre(inp, "run/"): # 执行一个 python 程序，将输出作为 HTML 返回
-        print("[服务器 工人] 执行一个 python 程序")
+        print("    [服务器 工人] 执行一个 python 程序")
         inp = inp[len("run/"):]
         
         res = ""
@@ -151,7 +151,7 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         inp += ".py"
 
         if not os.path.isfile(inp): # 文件不存在
-            print("[服务器 工人] python 程序不存在!")
+            print("    [服务器 工人] python 程序不存在!")
             outp = "HTTP/1.1 200 OK\nContent-Type: text\n\n"
             outp += "<head><meta charset=\"utf-8\"><title>404 Not Found</title></head>"
             outp += "<body style='max-width: 500px; margin: 0 auto'><h4>喵呜~ 您的程序丢了!</h4>"
@@ -162,10 +162,10 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         fi.write(res)
         fi.close()
 
-        print(" 执行 python 程序 inp = " + inp + " ...")
+        print("     执行 python 程序 inp = " + inp + " ...")
         os.system("python3 " + inp + " < tmp-in" + str(cid) + " > tmp-out" + str(cid))
         
-        print(" 生成返回结果 ...")
+        print("     生成返回结果 ...")
         outp += getf("tmp-out" + str(cid))
 
         os.system("rm tmp-in" + str(cid))
@@ -204,14 +204,14 @@ def consultant(cli): # use this in threads to answer for clients
     cid = conid # get an id by count
 
     try:
-        print("[服务器 顾问] 等待客户端反馈信息, cid = " + str(cid))
+        print("    [服务器 顾问] 等待客户端反馈信息, cid = " + str(cid))
         msg = cli.recv(1024 * 1024 * 33)
 
     except:
-        print("[服务器 顾问] 等待客户端反馈信息时出错. cid = " + str(cid))
+        print("    [服务器 顾问] 等待客户端反馈信息时出错. cid = " + str(cid))
         print(traceback.format_exc())
 
-    print("[服务器 顾问] 向客户端反馈信息 cid = " + str(cid))
+    print("    [服务器 顾问] 向客户端反馈信息 cid = " + str(cid))
     csend(cli, enco(worker(msg, cid)))
     cli.close()
 
