@@ -5,6 +5,12 @@ import translator
 from config import WAN_IP
 from config import PORT
 
+def getf(filename): # 读取文本文件的全部内容
+    fi = open(filename, "r")
+    ans = fi.read()
+    fi.close()
+    return ans
+
 try:
 
     inp = ""
@@ -15,6 +21,7 @@ try:
 
     print("<head>")
     print("<title>获取系统时间</title>")
+    print(getf("css.html"))
     print("<meta charset=\"utf-8\">")
     print("</head>")
 
