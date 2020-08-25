@@ -51,6 +51,13 @@ WAN_IP = "127.0.0.1"  # 这一条需要手动设置成您的服务器在广域�
 ``http://HOST-IP:PORT/favicon.ico``
 (如果图标不对，你可以先访问这个网址，此后浏览器会储存这个正确的图标)
 
+## 显示所有文件
+``http://HOST-IP:PORT/list/`` 请注意不要省略最右侧的"/"
+
+## 下载一个文件
+``http://HOST-IP:PORT/download/NAME`` (含后缀名)
+
+
 # 如何关闭服务器
 
 1. 执行命令： ps -ef | grep python
