@@ -57,10 +57,15 @@ WAN_IP = "127.0.0.1"  # 这一条需要手动设置成您的服务器在广域�
 ## 下载一个文件
 ``http://HOST-IP:PORT/download/NAME`` (含后缀名)
 
+## 访问欢迎页
+``http://HOST-IP:PORT/`` 或
+``http://HOST-IP:PORT/run/welcome`` (两者等价)
 
 # 如何关闭服务器
 
 1. 执行命令： ps -ef | grep python
 2. 在列表中找到进程 "python3 server.py" 对应的编号
 3. 执行命令： kill -9 <进程编号> 杀死进程
+
+程序结束后端口可能不会立刻解除占用，如果希望端口立刻解除占用，请重启服务器。
 

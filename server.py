@@ -78,8 +78,17 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
                 continue
             outp += "<tr>\n<td>" + x + "</td>\n"
             if os.path.isfile(x):
+
+                flis = x.split(".")
+                appendix = flis[-1] # 最后一个元素是后缀名
+                
                 outp += "<td>是</td>\n"
-                outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button></td>\n"
+                if appendix in ["py", "html", "out", "txt"]:
+                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/code/"+x+"'\">预览代码</button></td>\n"
+                elif appendix in ["png", "jpg"]:
+                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/image/" + x + "'\">预览图片</button></td>\n"
+                else:
+                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button></td>"
             else:
                 outp += "<td>否</td>\n"
                 outp += "<td>禁用</td>\n"
@@ -200,9 +209,12 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         outp = getf(inp)
         return outp
 
-    elif matchpre(inp, "run/"): # 执行一个 python 程序，将输出作为 HTML 返回
+    elif matchpre(inp, "run/") or inp=="": # 执行一个 python 程序，将输出作为 HTML 返回
         print("    [服务器 工人] 执行一个 python 程序")
-        inp = inp[len("run/"):]
+        if inp != "":
+            inp = inp[len("run/"):]
+        else:
+            inp = "welcome" # 直接定向到欢迎文件里
         
         res = ""
         if inp.find("/") != -1:
@@ -228,6 +240,7 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         os.system("python3 " + inp + " < tmp-in" + str(cid) + " > tmp-out" + str(cid))
         
         print("     生成返回结果 ...")
+        outp = """HTTP/1.1 200 OK\nContent-Type: html\nCharset: UTF-8\n\n"""
         outp += getf("tmp-out" + str(cid))
 
         os.system("rm tmp-in" + str(cid))

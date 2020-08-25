@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- encoding: utf-8 -*-
+
 import time
 import traceback
 
@@ -22,9 +25,10 @@ try:
         pass # 不能获取说明没有输入信息
 
     print("<head>")
-    print("<title>欢迎页</title>")
-    print(getf("css.html"))
+    #print("<title>欢迎页</title>")
     print("<meta charset=\"utf-8\">")
+    print(getf("css.html"))
+    print("<title>欢迎页</title>")
     print("</head>")
 
     print("<body style=\"max-width: 700px; margin: 0 auto\">")
@@ -47,6 +51,13 @@ try:
 
     print("<p>GGN_2015 的 github 账户：<button onclick=\"window.location.href='https://github.com/GGN-2015'\">GGN_2015</button></p>")
 
+    print("<h3>功能简介</h3>")
+
+    print("<table>")
+    print("    <tr><th>功能</th><th>链接/介绍</th></tr>")
+    print("    <tr><td>显示文件列表</td><td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/list/'\">list</button></td></tr>")
+    print("    <tr><td>图床语法</td><td>http://HOST-IP:PORT/image/NAME</td></tr>")
+    print("</table>")
 
 except:
     print("<hr>")
