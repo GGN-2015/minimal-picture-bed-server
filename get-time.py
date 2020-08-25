@@ -26,7 +26,7 @@ try:
     print("</head>")
 
     print("<body style=\"max-width: 700px; margin: 0 auto\">")
-    print("<h1> 当前的时间是 " + time.ctime() + " </h1>")
+    print("<h1>" + time.ctime() + " </h1>")
 
     if inp != "":
         print("<h4> 您的输入是{" + inp + "} </h4>")

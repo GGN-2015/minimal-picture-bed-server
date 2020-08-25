@@ -59,7 +59,68 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
 
     print("    [服务器 工人] inp = " + inp)
 
-    if matchpre(inp, "image/") or inp == "favicon.ico":
+    if matchpre(inp, "list/"): # 生成一个文件列表
+        os.system("ls > list.out") # for linux only
+        
+        outp = """HTTP/1.1 200 OK\nContent-Type: html\ncharset: UTF-8\n\n"""
+        outp += "<head><title>显示目录</title><meta charset=\"utf-8\">"
+        outp += getf("css.html")
+        outp += "</head><body style=\"max-width: 700px; margin: 0 auto\">\n"
+
+        nlis = getf("list.out").split("\n")
+        
+        outp += "<h1>list</h1>\n"
+        outp += "<table border=\"2\">\n"
+        outp += "<tr>\n<th>目录列表</th>\n<th>是否可下载</th>\n<th>下载键</th></tr>\n"
+
+        for x in nlis:
+            if x == "":
+                continue
+            outp += "<tr>\n<td>" + x + "</td>\n"
+            if os.path.isfile(x):
+                outp += "<td>是</td>\n"
+                outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button></td>\n"
+            else:
+                outp += "<td>否</td>\n"
+                outp += "<td>禁用</td>\n"
+            outp += "</tr>\n"
+            print("    [服务器 工人] [文件列表]" + x)
+        
+        outp += "</table>"
+        outp += "</body>"
+
+        os.system("rm list.out")
+        return outp
+
+    elif matchpre(inp, "download/"): # 下载一个文件
+        inp = inp[len("download/"):]
+        
+        fname = inp
+
+        if not os.path.isfile(fname): # 文件不存在
+            
+            outp = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n"
+            outp += "<head><meta charset=\"utf-8\"><title>404 Not Found</title></head>"
+            outp += "<body style='max-width: 500px; margin: 0 auto'><h4>喵呜~ 您要下载的文件不存在!</h4>"
+            outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\"></img></body>"
+            return outp
+
+        outp = "HTTP/1.1 200 OK\n"
+        outp += "Accept-Ranges: bytes\n"
+        outp += "Content-Type: application/octet-stream\n"
+        outp += "Server: Apache-Coyote/1.1\n"
+        outp += "Date: " + time.ctime() + " GMT\n"
+        outp += "Content-Length: $SIZE$\n\n"
+
+        fi = open(fname, "rb")
+        ans = fi.read()
+        outp.replace("$SIZE$", str(len(ans)))
+        fi.close()
+
+        return outp.encode("utf-8") + ans
+
+
+    elif matchpre(inp, "image/") or inp == "favicon.ico":
         print("    [服务器 工人] 正在生成图片返回信息.")
 
         if inp != "favicon.ico":
@@ -93,7 +154,7 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
             if not os.path.isfile(inp):
                 # 文件不存在
                 print("[服务器 工人] 图片不存在.")
-                outp = "HTTP/1.1 200 OK\nContent-Type: text\n\n"
+                outp = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n"
                 outp += "<head><meta charset=\"utf-8\"><title>404 Not Found</title></head>"
                 outp += "<body style='max-width: 500px; margin: 0 auto'><h4>喵呜~ 您的图丢了!</h4>"
                 outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\"></img></body>"
@@ -115,8 +176,9 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         
 
     outp = """HTTP/1.1 200 OK\nContent-Type: html\nCharset: UTF-8\n\n"""
-    outp += "<head><title>显示代码</title><meta charset=\"utf-8\"></head>"
-    outp += "<body>\n"
+    outp += "<head><title>显示代码</title><meta charset=\"utf-8\">"
+    outp += getf("css.html")
+    outp += "</head><body style=\"max-width: 700px; margin: 0 auto\">\n"
 
     # ----- 在线下填写你的代码 -----
 
@@ -128,7 +190,7 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
 
     if matchpre(inp, "code/"): # 显示程序代码
         inp = inp[len("code/"):]
-        outp += "<h2>"+inp+"</h2><hr>\n"
+        outp += "<h1>"+inp+"</h1>\n"
         outp += "<pre>"+getf(inp).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")+"</pre>"
         outp += "<img src=\"http://" + WAN_IP + ":" + str(PORT) +"/image/look.png\"></img>"
         return outp
