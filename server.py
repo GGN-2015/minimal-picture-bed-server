@@ -60,6 +60,8 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
     print("    [服务器 工人] inp = " + inp)
 
     if matchpre(inp, "list/"): # 生成一个文件列表
+        inp = inp[len("list/"):]
+
         os.system("ls > list.out") # for linux only
         
         outp = """HTTP/1.1 200 OK\nContent-Type: html\ncharset: UTF-8\n\n"""
@@ -70,18 +72,29 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         nlis = getf("list.out").split("\n")
         
         outp += "<h1>list</h1>\n"
+
+        outp += "<table>\n"
+        outp += "    <tr><td>筛选方式</td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/'\">不筛选</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/image/'\">仅图片</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/code/'\">仅代码</a></td></tr>"
+        outp += "</table>\n"
+
         outp += "<table border=\"2\">\n"
         outp += "<tr>\n<th>目录列表</th>\n<th>是否可下载</th>\n<th>下载键</th><th>缩略图</th></tr>\n"
 
         for x in nlis:
             if x == "" or x == "list.out":
                 continue
-            outp += "<tr>\n<td>" + x + "</td>\n"
             if os.path.isfile(x):
 
                 flis = x.split(".")
                 appendix = flis[-1] # 最后一个元素是后缀名
                 
+                if matchpre(inp, "code/") and not( appendix in ["py", "html"]):
+                    continue
+
+                if matchpre(inp, "image/") and not( appendix in ["png", "jpg"]):
+                    continue
+                
+                outp += "<tr>\n<td>" + x + "</td>\n"
                 outp += "<td>是</td>\n"
                 if appendix in ["py", "html"]:
                     outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/code/"+x+"'\">预览代码</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/code.jpg\"></img></td>\n"
@@ -89,7 +102,11 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
                     outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/image/" + x + "'\">预览图片</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/"+x+"\"></img></td>\n"
                 else:
                     outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/text.jpg\"></img></td>"
-            else:
+            else: # 文件夹
+                if matchpre(inp, "code/") or matchpre(inp, "image/"):
+                    continue
+                
+                outp += "<tr>\n<td>" + x + "</td>\n"    
                 outp += "<td>否</td>\n"
                 outp += "<td>禁用</td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/folder.jpg\"></img></td>\n"
             outp += "</tr>\n"
