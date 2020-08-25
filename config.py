@@ -1,3 +1,3 @@
-PORT = 10657
+PORT = 10650
 HOST_IP = "auto"
 WAN_IP = "139.155.89.85"

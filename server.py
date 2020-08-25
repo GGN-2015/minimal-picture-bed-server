@@ -65,16 +65,16 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         outp = """HTTP/1.1 200 OK\nContent-Type: html\ncharset: UTF-8\n\n"""
         outp += "<head><title>显示目录</title><meta charset=\"utf-8\">"
         outp += getf("css.html")
-        outp += "</head><body style=\"max-width: 700px; margin: 0 auto\">\n"
+        outp += "</head><body style=\"max-width: 1000px; margin: 0 auto\">\n"
 
         nlis = getf("list.out").split("\n")
         
         outp += "<h1>list</h1>\n"
         outp += "<table border=\"2\">\n"
-        outp += "<tr>\n<th>目录列表</th>\n<th>是否可下载</th>\n<th>下载键</th></tr>\n"
+        outp += "<tr>\n<th>目录列表</th>\n<th>是否可下载</th>\n<th>下载键</th><th>缩略图</th></tr>\n"
 
         for x in nlis:
-            if x == "":
+            if x == "" or x == "list.out":
                 continue
             outp += "<tr>\n<td>" + x + "</td>\n"
             if os.path.isfile(x):
@@ -83,15 +83,15 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
                 appendix = flis[-1] # 最后一个元素是后缀名
                 
                 outp += "<td>是</td>\n"
-                if appendix in ["py", "html", "out", "txt"]:
-                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/code/"+x+"'\">预览代码</button></td>\n"
+                if appendix in ["py", "html"]:
+                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/code/"+x+"'\">预览代码</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/code.jpg\"></img></td>\n"
                 elif appendix in ["png", "jpg"]:
-                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/image/" + x + "'\">预览图片</button></td>\n"
+                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/image/" + x + "'\">预览图片</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/"+x+"\"></img></td>\n"
                 else:
-                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button></td>"
+                    outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/text.jpg\"></img></td>"
             else:
                 outp += "<td>否</td>\n"
-                outp += "<td>禁用</td>\n"
+                outp += "<td>禁用</td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/folder.jpg\"></img></td>\n"
             outp += "</tr>\n"
             print("    [服务器 工人] [文件列表]" + x)
         
