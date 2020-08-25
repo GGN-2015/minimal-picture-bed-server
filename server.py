@@ -74,7 +74,15 @@ def worker(inp, cid): # 操作员函数，将HTML代码作为返回值
         outp += "<h1>list</h1>\n"
 
         outp += "<table>\n"
-        outp += "    <tr><td>筛选方式</td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/'\">不筛选</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/image/'\">仅图片</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/code/'\">仅代码</a></td></tr>"
+        if inp == "":
+            outp += "    <tr><td>筛选方式</td><td><a style=\"color: red\" onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/'\">不筛选</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/image/'\">仅图片</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/code/'\">仅代码</a></td></tr>"
+        elif matchpre(inp, "image/"):
+            outp += "    <tr><td>筛选方式</td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/'\">不筛选</a></td><td><a style=\"color: red\" onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/image/'\">仅图片</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/code/'\">仅代码</a></td></tr>"
+        elif matchpre(inp, "code/"):
+            outp += "    <tr><td>筛选方式</td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/'\">不筛选</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/image/'\">仅图片</a></td><td><a style=\"color: red\" onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/code/'\">仅代码</a></td></tr>"
+        else:
+            outp += "    <tr><td>筛选方式</td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/'\">不筛选</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/image/'\">仅图片</a></td><td><a onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/list/code/'\">仅代码</a></td></tr>"
+
         outp += "</table>\n"
 
         outp += "<table border=\"2\">\n"
