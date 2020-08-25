@@ -4086,4 +4086,12 @@ OSError: [Errno 98] Address already in use
     [服务器 顾问] 等待客户端反馈信息, cid = 100
 [服务器] 等待客户端连接 ...
     [服务器 顾问] 向客户端反馈信息 cid = 100
-    [服务器 工人] inp = image/text.jpg
+    [服务器 工人] inp = image/text.jpg    [插件 image] cid = {1}
+list.py:36: SyntaxWarning: name 'cid' is assigned to before global declaration
+  global cid
+    [插件 image] cid = {11}
+    [插件 image] cid = {12}
+    [插件 image] cid = {13}
+    [插件 image] cid = {14}
+    [插件 image] cid = {16}
+    [插件 image] cid = {15}

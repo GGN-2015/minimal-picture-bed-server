@@ -20,32 +20,29 @@ WAN_IP = "127.0.0.1"  # 这一条需要手动设置成您的服务器在广域�
 4. ``bg %job编号`` 将该程序在后台运行
 5. ``disown %job编号`` 将该进程与当前控制台脱离联系
 
-# 上传图片 运行 upload.py/scp 上传文件
-此版本只支持通过命令行上传图片到 server，并要求上传时 server.py 必须已在相应的服务器端口运行。
+# 上传文件
 
-运行 upload.py 后只需要按照提示输入所需信息。
-
-一定要注意：重名文件并不会被覆盖，而会被“连接”，即第二个文件追加到第一个文件尾部。
+``scp <path> <usr>@<HOST-IP>:<new-path>`` 取缔了用 upload.py 上传文件的方式。
 
 # 更换 logo
 
-将你的 png 格式的 logo 上传到 server.py 所在的文件夹，替换原有的 favicon.png 文件即可。
-
+将你的 png 格式的 logo 上传到 server.py 所在的文件夹，将其命名为 favicon.png 即可。
 
 # 如何通过浏览器访问此图床
+
+万物皆插件: image, code, welcome, list, facicon.ico 是五个自带的插件。
+
+插件独立于 server.py 之外，各自占据一个 .py 文件。
 
 ## 查看图片
 ``http://HOST-IP:PORT/image/NAME.jpg`` (or NAME.png)
 
-## 查看 HTML 文件
-``http://HOST-IP:PORT/show/NAME.html``
-
 ## 查看源代码
-``http://HOST-IP:PORT/code/NAME`` (含后缀名)
+``http://HOST-IP:PORT/code/NAME`` (NAME 含后缀名)
 
 ## 运行一个 python 程序并将程序的输出作为 HTML 代码传回浏览器
 
-``http://HOST-IP:PORT/run/NAME`` (不含后缀名".py")
+``http://HOST-IP:PORT/NAME`` (不含后缀名".py")
 
 ## 访问图标文件
 ``http://HOST-IP:PORT/favicon.ico``
@@ -59,7 +56,7 @@ WAN_IP = "127.0.0.1"  # 这一条需要手动设置成您的服务器在广域�
 
 ## 访问欢迎页
 ``http://HOST-IP:PORT/`` 或
-``http://HOST-IP:PORT/run/welcome`` (两者等价)
+``http://HOST-IP:PORT/welcome`` (两者等价)
 
 # 如何关闭服务器
 

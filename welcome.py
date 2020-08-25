@@ -68,7 +68,7 @@ try:
 
     sprint("</body>")
 
-    sprint("<p>来自 github 的开源 repository：<a onclick=\"window.location.href='https://github.com/GGN-2015/minimal-picture-bed-server/tree/Version1002'\">minimal-picture-bed-server/Version1002</a></p>")
+    sprint("<p>来自 github 的开源 repository：<a onclick=\"window.location.href='https://github.com/GGN-2015/minimal-picture-bed-server/tree/full_plug_in'\">minimal-picture-bed-server/full_plug_in</a></p>")
 
     sprint("<p>GGN_2015 的 github 账户：<button onclick=\"window.location.href='https://github.com/GGN-2015'\">GGN_2015</button></p>")
 
