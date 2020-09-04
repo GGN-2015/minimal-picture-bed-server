@@ -69,7 +69,7 @@ try:
     outp += "<tr>\n<th>目录列表</th>\n<th>是否可下载</th>\n<th>下载键</th><th>缩略图</th></tr>\n"
 
     for x in nlis:
-        if x == "" or x == "list.out":
+        if x == "" or x == "list.out" or x.find("tmp-in") != -1:
             continue
         if os.path.isfile(x):
 

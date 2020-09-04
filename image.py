@@ -19,6 +19,7 @@ def eprint(s):
 cid = ""
 
 def sprint(s):
+    global cid
     if type(s) == str:
         s = s.encode("utf-8")
     fi = open("tmp-out" + cid, "ab")
