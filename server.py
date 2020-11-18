@@ -154,7 +154,7 @@ def sloop(): # 服务器的主循环
 
     else:
         global cflag
-        clfag = True # True means continue to loop
+        cflag = True # True means continue to loop
 
         while cflag: # cflag can be set by worker
             try:

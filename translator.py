@@ -33,8 +33,10 @@ def GetDateDelta(date2, date1): # date1, date2 is a string like "2008-05-12"
     else:
         return int(tmp.split("day")[0])+1
 
-def translate(s): # s is a string like "%E9%9D%92%E5%B7%9E%E5%88%86%E5%BA%97"
-    return codecs.decode(s.replace("%", ""), "hex").decode("utf-8")
+#def translate(s): # s is a string like "%E9%9D%92%E5%B7%9E%E5%88%86%E5%BA%97"
+#    return codecs.decode(s.replace("%", ""), "hex").decode("utf-8")
+
+from trans_ext import translate
 
 def retranslate(s): # s is a string like "这是汉字"
     s = codecs.encode(s.encode("utf-8"), "hex").decode("utf-8")

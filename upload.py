@@ -1,39 +1,58 @@
+#!/usr/bin/python
+# -*- encoding: utf-8 -*-
 
-import ggntalk # my own lib
+import sys
+import os
+import time
+import traceback
 
-print("[上传文件] 开始.")
+import translator
+from server import getip
 
-fname = input("输入文件在本地的位置（含文件名）>>>")
-ans = ggntalk.getfb(fname)
-fname = input("输入上传到服务器后文件的名称>>>")
-hostip = input("输入服务器 IP>>>")
-port = int(input("输入服务器端口 >>>"))
+from config import WAN_IP
+from config import PIC_PORT as PORT
+import ggntalk
 
-all_len = len(ans)
-print("[上传文件] 总长度 = " + str(all_len))
+def eprint(s):
+    sys.stderr.write(s+"\n")
 
-def nstr(i): # i 是一个整数
-    if i < 10:
-        return "  " + str(i)
-    elif i < 100:
-        return " " + str(i)
-    return str(i)
+cid = ""
 
-flag = False # 出错标记
+def sprint(s):
+    global cid
+    if type(s) == str:
+        s = s.encode("utf-8")
+    fi = open("tmp-out" + cid, "ab")
+    fi.write(s+b"\n")
+    fi.close
 
-while len(ans) > 1000:
-    msg = ggntalk.csnd(b"append|" + fname.encode("utf-8") + b"|" + ans[:1000], hostip, port,1024)
-    ans = ans[1000:]
-    print(" 已上传 " + nstr(int((all_len - len(ans))/all_len * 100)) + "% \t" + msg)
-    if msg == "" or msg == "#error: can not connect to the server.":
-        YN = input("  服务器没有回应或出错，是否终止上传文件？")
-        if YN == "y" or YN == "Y":
-            flag = True
-            print("[上传文件]您终止了文件上传!")
-            break
+def getf(filename): # 读取文本文件的全部内容
+    fi = open(filename, "r")
+    ans = fi.read()
+    fi.close()
+    return ans
 
-if len(ans) != 0 and not flag:
-    msg = ggntalk.csnd(b"append|" + fname.encode("utf-8") + b"|" + ans, hostip, port, 1024)
-    print("已上传 100% \t" + msg)
+if __name__ == "__main__":
+    try:
+        #global cid
+        cid = sys.argv[1]
 
-print("[上传文件] 文件上传结束.")
+        inp = ""
+        try:
+            inp=input()
+        except:
+            pass
+
+        outp = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n"
+        outp += getf("upload.html").replace("$HOST_PORT$", WAN_IP + ":" + str(PORT))
+        sprint(outp)
+        os._exit(0)
+
+    except:
+        sprint("HTTP/1.1 200 OK\nContent-Type: text/html\n\n")
+        sprint("<head><meta charset=\"utf-8\"><title>404 Not Found</title></head>")
+        sprint("<body style='max-width: 500px; margin: 0 auto'>")
+        sprint("<h1>执行程序时出错!</h1>")
+        sprint("    <img src=\"http://" + WAN_IP + ":" + str(PORT) + "/image/cry.jpg\" style=\"width:20%\"></img><br><br>")
+        sprint("    <pre>" + traceback.format_exc().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")) # 输出错误信息
+        sprint("    </pre>\n</body>")
