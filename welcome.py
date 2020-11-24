@@ -61,7 +61,7 @@ try:
     #        print("<h4> 解码后您的输入是{" + translator.translate(inp) + "}</h4>")
 
     sprint("<h1>欢迎使用 GGN_2015 的迷你图床程序</h1>")
-    sprint("2020-11-15 Login this page from JLU's computer lab.\n")
+    sprint("2020-11-15 Login this page from JLU's computer lab.<br><br>\n")
     sprint("2020-09-30 晓峰到此一游~\n")
     sprint("<table>")
     sprint("    <tr><th>公网 IP</th><th>局域网 IP</th><th>端口</th></tr>")
@@ -85,6 +85,7 @@ try:
     sprint("<h2>一些 GGN_2015 开发的智障功能</h2>")
     sprint("<button onclick=\"window.location.href='/matrix-mul'\">三阶矩乘(手机)</button>")
     sprint("<button onclick=\"window.location.href='/bbs'\">极简论坛(电脑)</button>")
+    sprint("<button onclick=\"window.location.href='/2048'\">2048(都行)</button>")
 
 except:
     sprint("<hr>")

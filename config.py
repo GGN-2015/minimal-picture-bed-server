@@ -1,4 +1,4 @@
 PORT = 10653
 HOST_IP = "auto"
-WAN_IP = "139.155.89.85"
+WAN_IP = "premierbob.club"
 PIC_PORT = 10432

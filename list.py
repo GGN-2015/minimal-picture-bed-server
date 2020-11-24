@@ -76,7 +76,7 @@ if __name__ == "__main__":
                 flis = x.split(".")
                 appendix = flis[-1] # 最后一个元素是后缀名
                 
-                if matchpre(inp, "code/") and not( appendix in ["py", "html"]):
+                if matchpre(inp, "code/") and not( appendix in ["py", "html", "json"]):
                     continue
 
                 if matchpre(inp, "image/") and not( appendix in ["png", "jpg"]):
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                 
                 outp += "<tr>\n<td>" + x + "</td>\n"
                 outp += "<td>是</td>\n"
-                if appendix in ["py", "html"]:
+                if appendix in ["py", "html", "json"]:
                     outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://"+WAN_IP+":"+str(PORT)+"/code/"+x+"'\">预览代码</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/code.jpg\"></img></td>\n"
                 elif appendix in ["png", "jpg"]:
                     outp += "<td><button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/download/" + x + "'\">下载</button> <button onclick=\"window.location.href='http://" + WAN_IP + ":" + str(PORT) + "/image/" + x + "'\">预览图片</button></td><td><img style=\"width: 20px\" src=\"http://"+WAN_IP+":"+str(PORT)+"/image/"+x+"\"></img></td>\n"

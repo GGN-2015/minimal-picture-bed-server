@@ -43,7 +43,7 @@ try:
         pass
 
     outp = "HTTP/1.1 200 OK\nContent-Type:text/html\n\n"
-    outp += getf("get-time.html").replace("$TIME$", time.ctime());
+    outp += getf("get-time.html").replace("$TIME$", time.strftime("%Y-%m-%d %H:%M %Z"));
     sprint(outp)
 
 except:
