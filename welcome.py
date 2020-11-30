@@ -63,6 +63,7 @@ try:
     sprint("<h1>欢迎使用 GGN_2015 的迷你图床程序</h1>")
     sprint("2020-11-15 Login this page from JLU's computer lab.<br><br>\n")
     sprint("2020-09-30 晓峰到此一游~\n")
+    sprint("<br><br><img src='https://latex.codecogs.com/gif.latex?%5Chuge%20f%28x%29%3D%5Csum_%7Bt%3D1%7D%5Eng%28t%5Ex%29%5Cmod%20n%5Ex'>")
     sprint("<table>")
     sprint("    <tr><th>公网 IP</th><th>局域网 IP</th><th>端口</th></tr>")
     sprint("    <tr><td>" + WAN_IP + "</td><td>" + getip() + "</td><td>" + str(PORT) + "</td></tr>")
